@@ -4,8 +4,8 @@ out vec4 FragColor;
 
 in VS_OUT {
 	vec3 FragPos;
-	vec3 Normal;
 	vec2 TexCoords;
+	mat3 TBN;
 } fs_in;
 
 uniform sampler2D normalMap;
@@ -16,9 +16,9 @@ uniform vec3 viewPos;
 
 void main() {
 	vec3 color = texture(diffuseMap, fs_in.TexCoords).rgb;
-	vec3 normal = normalize(fs_in.Normal);
-	normal = texture(normalMap, fs_in.TexCoords).rgb;
-	normal = normalize(normal * 2.0 - 1.0);
+	vec3 normal = texture(normalMap, fs_in.TexCoords).rgb;
+	normal = normal * 2.0 - 1.0;
+	normal = normalize(fs_in.TBN * normal);
 	vec3 lightColor = vec3(1.0);
 	// ambient
 	vec3 ambient = 0.15 * lightColor;
