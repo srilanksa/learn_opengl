@@ -3,31 +3,28 @@
 out vec4 FragColor;
 
 in VS_OUT {
-	vec3 FragPos;
 	vec2 TexCoords;
-	mat3 TBN;
+	vec3 TangentLightPos;
+	vec3 TangentViewPos;
+	vec3 TangentFragPos;
 } fs_in;
 
 uniform sampler2D normalMap;
 uniform sampler2D diffuseMap;
 
-uniform vec3 lightPos;
-uniform vec3 viewPos;
-
 void main() {
 	vec3 color = texture(diffuseMap, fs_in.TexCoords).rgb;
 	vec3 normal = texture(normalMap, fs_in.TexCoords).rgb;
-	normal = normal * 2.0 - 1.0;
-	normal = normalize(fs_in.TBN * normal);
+	normal = normalize(normal * 2.0 - 1.0);
 	vec3 lightColor = vec3(1.0);
 	// ambient
 	vec3 ambient = 0.15 * lightColor;
 	// diffuse
-	vec3 lightDir = normalize(lightPos - fs_in.FragPos);
+	vec3 lightDir = normalize(fs_in.TangentLightPos - fs_in.TangentFragPos);
 	float diff = max(dot(lightDir, normal), 0.0);
 	vec3 diffuse = diff * lightColor;
 	// specular
-	vec3 viewDir = normalize(viewPos - fs_in.FragPos);
+	vec3 viewDir = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
 	float spec = 0.0;
 	vec3 halfwayDir = normalize(lightDir + viewDir);  
 	spec = pow(max(dot(normal, halfwayDir), 0.0), 64.0);
