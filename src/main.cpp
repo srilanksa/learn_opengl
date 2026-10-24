@@ -80,18 +80,21 @@ int main()
 
 	// build and compile shaders
 	// -------------------------
-	Shader shader("shaders/normalMap.vert", "shaders/normalMap.frag");
+	Shader shader("shaders/parallaxMap.vert", "shaders/parallaxMap.frag");
 
 	// load textures
 	// -------------
-	unsigned int diffuseMap = loadTexture("assets/brickwall.jpg");
-	unsigned int normalMap  = loadTexture("assets/brickwall_normal.jpg");
+	unsigned int diffuseMap = loadTexture("assets/bricks2.jpg");
+	unsigned int normalMap  = loadTexture("assets/bricks2_normal.jpg");
+	unsigned int depthMap  = loadTexture("assets/bricks2_disp.jpg");
 
 	// shader configuration
 	// --------------------
 	shader.use();
 	shader.setInt("diffuseMap", 0);
 	shader.setInt("normalMap", 1);
+	shader.setInt("depthMap", 2);
+	shader.setFloat("height_scale", 0.1);
 
 	// lighting info
 	// -------------
@@ -124,7 +127,7 @@ int main()
 		shader.setMatrix4f("view", view);
 		// render normal-mapped quad
 		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::rotate(model, glm::radians((float)glfwGetTime() * -10.0f), glm::normalize(glm::vec3(1.0, 0.0, 0.0))); // rotate the quad to show normal mapping from multiple directions
+		//model = glm::rotate(model, glm::radians((float)glfwGetTime() * -10.0f), glm::normalize(glm::vec3(1.0, 0.0, 0.0))); // rotate the quad to show normal mapping from multiple directions
 		shader.setMatrix4f("model", model);
 		shader.setVec3f("viewPos", camera.Position);
 		shader.setVec3f("lightPos", lightPos);
@@ -132,6 +135,8 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, diffuseMap);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, normalMap);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, depthMap);
 		renderQuad();
 
 		// render light source (simply re-renders a smaller plane at the light's position for debugging/visualization)
