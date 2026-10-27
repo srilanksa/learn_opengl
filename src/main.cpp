@@ -84,9 +84,9 @@ int main()
 
 	// load textures
 	// -------------
-	unsigned int diffuseMap = loadTexture("assets/bricks2.jpg");
-	unsigned int normalMap  = loadTexture("assets/bricks2_normal.jpg");
-	unsigned int depthMap  = loadTexture("assets/bricks2_disp.jpg");
+	unsigned int diffuseMap = loadTexture("assets/wood.png");
+	unsigned int normalMap  = loadTexture("assets/toy_box_normal.png");
+	unsigned int depthMap  = loadTexture("assets/toy_box_disp.png");
 
 	// shader configuration
 	// --------------------
@@ -94,7 +94,7 @@ int main()
 	shader.setInt("diffuseMap", 0);
 	shader.setInt("normalMap", 1);
 	shader.setInt("depthMap", 2);
-	shader.setFloat("height_scale", 0.1);
+	shader.setFloat("height_scale", 0.5);
 
 	// lighting info
 	// -------------
