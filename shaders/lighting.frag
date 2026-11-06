@@ -33,7 +33,7 @@ void main()
         vec3 result = diffuse;        
         // attenuation (use quadratic as we have gamma correction)
         float distance = length(fs_in.FragPos - lights[i].Position);
-        result *= 1.0 / (distance); //* distance);
+        result *= 1.0 / (distance * distance);
         lighting += result;
                 
     }

@@ -86,7 +86,7 @@ int main()
 
 	// load textures
 	// -------------
-	unsigned int woodTexture = loadTexture("./assets/wood.png", false); // note that we're loading the texture as an SRGB texture
+	unsigned int woodTexture = loadTexture("./assets/wood.png", true); // note that we're loading the texture as an SRGB texture
 
 	// configure floating point framebuffer
 	// ------------------------------------
