@@ -171,6 +171,7 @@ int main()
 	shader.setInt("diffuseTexture", 0);
 	hdrShader.use();
 	hdrShader.setInt("hdrBuffer", 0);
+	hdrShader.setInt("bloomBlur", 1);
 
 	// render loop
 	// -----------
@@ -188,7 +189,7 @@ int main()
 
 		// render
 		// ------
-		glClearColor(0.f, 0.f, 0.f, 1.0f);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// 1. render scene into floating point framebuffer
@@ -292,6 +293,8 @@ int main()
 		hdrShader.setInt("hdr", hdr);
 		hdrShader.setFloat("exposure", exposure);
 		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
+		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[!horizontal]);
 		renderQuad();
 

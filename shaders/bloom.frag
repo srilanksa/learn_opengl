@@ -5,12 +5,14 @@ in vec2 TexCoords;
 
 uniform float exposure;
 uniform sampler2D hdrBuffer;
+uniform sampler2D bloomBlur;
 
 void main()
 {
 	const float gamma = 2.2;
 	vec3 hdrColor = texture(hdrBuffer, TexCoords).rgb;
-	
+	vec3 bloomColor = texture(bloomBlur, TexCoords).rgb;
+	hdrColor += bloomColor;
 	// reinhard tone mapping
 	//vec3 mapped = hdrColor / (hdrColor + vec3(1.0));
 	// exposure tone mapping
