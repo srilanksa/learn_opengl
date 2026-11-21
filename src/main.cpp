@@ -83,7 +83,7 @@ int main()
 	// build and compile shaders
 	// -------------------------
 	Shader shaderGeometryPass("shaders/gBuffer.vert", "shaders/gBuffer.frag");
-	Shader quadShader("shaders/quad.vert", "shaders/quad.frag");
+	Shader quadShader("shaders/quad.vert", "shaders/deferredShader.frag");
 
 	// load models
 	// -----------
@@ -162,7 +162,9 @@ int main()
 	}
 
 	quadShader.use();
-	quadShader.setInt("texture_buffer", 0);
+	quadShader.setInt("gPosition", 0);
+	quadShader.setInt("gNormal", 1);
+	quadShader.setInt("gAlbedoSpec", 2);
 
 	// render loop
 	// -----------
@@ -203,10 +205,26 @@ int main()
 		}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		quadShader.use();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glActiveTexture(GL_TEXTURE0);
-		//set to which texture you want to visualize
 		glBindTexture(GL_TEXTURE_2D, gPosition);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, gNormal);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
+		quadShader.use();
+		for (unsigned int i = 0; i < lightPositions.size(); i++)
+		{
+			quadShader.setVec3f("lights[" + std::to_string(i) + "].Position", lightPositions[i]);
+			quadShader.setVec3f("lights[" + std::to_string(i) + "].Color", lightColors[i]);
+			// update attenuation parameters and calculate radius
+			const float linear = 0.7f;
+			const float quadratic = 1.8f;
+			quadShader.setFloat("lights[" + std::to_string(i) + "].Linear", linear);
+			quadShader.setFloat("lights[" + std::to_string(i) + "].Quadratic", quadratic);
+		}
+		quadShader.setVec3f("viewPos", camera.Position);
+		//set to which texture you want to visualize
 		renderQuad();
 
 
