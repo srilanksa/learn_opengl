@@ -84,6 +84,7 @@ int main()
 	// -------------------------
 	Shader shaderGeometryPass("shaders/gBuffer.vert", "shaders/gBuffer.frag");
 	Shader quadShader("shaders/quad.vert", "shaders/deferredShader.frag");
+	Shader lightShader("shaders/light.vert", "shaders/light.frag");
 
 	// load models
 	// -----------
@@ -226,7 +227,23 @@ int main()
 		quadShader.setVec3f("viewPos", camera.Position);
 		//set to which texture you want to visualize
 		renderQuad();
+		
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glBlitFramebuffer(0, 0, SCR_WIDTH, SCR_HEIGHT, 0, 0, SCR_WIDTH, SCR_HEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+		lightShader.use();
+		lightShader.setMatrix4f("projection", projection);
+		lightShader.setMatrix4f("view", view);
+		for (unsigned int i = 0; i < NR_LIGHTS; i++){
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, lightPositions[i]);
+			model = glm::scale(model, glm::vec3(0.25f));
+			lightShader.setMatrix4f("model", model);
+			lightShader.setVec3f("lightColor", lightColors[i]);
+			renderCube();
+		}
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
