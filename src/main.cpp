@@ -219,15 +219,23 @@ int main()
 			quadShader.setVec3f("lights[" + std::to_string(i) + "].Position", lightPositions[i]);
 			quadShader.setVec3f("lights[" + std::to_string(i) + "].Color", lightColors[i]);
 			// update attenuation parameters and calculate radius
-			const float linear = 0.7f;
-			const float quadratic = 1.8f;
+			float constant = 1.0; 
+			float linear = 0.7;
+			float quadratic = 1.8;
+			float lightMax = std::fmaxf(std::fmaxf(lightColors[i].r, lightColors[i].g), lightColors[i].b);
+			float radius = 
+				(-linear 
+				 + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0 / 5.0) * lightMax))) 
+				 / (2 * quadratic);  
+
 			quadShader.setFloat("lights[" + std::to_string(i) + "].Linear", linear);
 			quadShader.setFloat("lights[" + std::to_string(i) + "].Quadratic", quadratic);
+			quadShader.setFloat("lights[" + std::to_string(i) + "].Radius", radius);
 		}
 		quadShader.setVec3f("viewPos", camera.Position);
 		//set to which texture you want to visualize
 		renderQuad();
-		
+
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		glBlitFramebuffer(0, 0, SCR_WIDTH, SCR_HEIGHT, 0, 0, SCR_WIDTH, SCR_HEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
